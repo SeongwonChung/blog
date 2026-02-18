@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
+import getPostsBySeries from "@/utils/getPostsBySeries";
+import { slugifyStr } from "@/utils/slugify";
+import { getPath } from "@/utils/getPath";
+
+type Props = {
+  post: CollectionEntry<"blog">;
+};
+
+const { post } = Astro.props;
+const { series } = post.data;
+
+let seriesPosts: CollectionEntry<"blog">[] = [];
+let currentIndex = -1;
+
+if (series) {
+  const allPosts = await getCollection("blog");
+  const seriesSlug = slugifyStr(series);
+  seriesPosts = getPostsBySeries(allPosts, seriesSlug);
+  currentIndex = seriesPosts.findIndex(p => p.id === post.id);
+}
+---
+
+{
+  series && seriesPosts.length > 1 && (
+    <div class="my-8 rounded-lg border border-border p-4">
+      <h3 class="mb-3 text-lg font-semibold">
+        <a
+          href={`/series/${slugifyStr(series)}`}
+          class="hover:text-accent"
+        >
+          Series: {series}
+        </a>
+      </h3>
+      <ol class="flex flex-col gap-1 text-sm">
+        {seriesPosts.map((p, i) => (
+          <li
+            class:list={[
+              "py-1 ps-2 border-s-2",
+              i === currentIndex
+                ? "border-accent font-semibold text-accent"
+                : "border-transparent",
+            ]}
+          >
+            {i === currentIndex ? (
+              <span>
+                {i + 1}. {p.data.title}
+              </span>
+            ) : (
+              <a
+                href={getPath(p.id, p.filePath)}
+                class="hover:text-accent"
+              >
+                {i + 1}. {p.data.title}
+              </a>
+            )}
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
