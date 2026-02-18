@@ -109,6 +109,15 @@ const nextPost =
       >
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
+    {
+      initOgImage && (
+        <img
+          src={typeof initOgImage === "string" ? initOgImage : initOgImage.src}
+          alt={title}
+          class="my-4 w-full rounded-lg object-cover"
+        />
+      )
+    }
     <SeriesNav post={post} />
 
     <article

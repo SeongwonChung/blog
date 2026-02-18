@@ -10,7 +10,9 @@ type Props = {
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 
-const { title, description, ...props } = data;
+const { title, description, ogImage, ...props } = data;
+
+const coverSrc = typeof ogImage === "string" ? ogImage : ogImage?.src;
 ---
 
 <li class="my-6">
@@ -22,6 +24,15 @@ const { title, description, ...props } = data;
       "focus-visible:no-underline focus-visible:underline-offset-0",
     ]}
   >
+    {
+      coverSrc && (
+        <img
+          src={coverSrc}
+          alt={title}
+          class="mb-2 w-full max-h-52 rounded-lg object-cover"
+        />
+      )
+    }
     <Heading
       style={{ viewTransitionName: slugifyStr(title.replaceAll(".", "-")) }}
     >
